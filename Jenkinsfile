@@ -42,9 +42,23 @@ pipeline {
 
     post {
         always {
+			 emailext(
+                subject: "Automation Test Report - Build #${env.BUILD_NUMBER}",
+                body: """
+                    <p>Hi Team,</p>
+                    <p>The automation suite has completed. Please find the report below:</p>
+                    <p><a href="${env.BUILD_URL}HTML_20Report/">Click here to view report</a></p>
+                    <p>Thanks,<br>Automation Jenkins</p>
+                """,
+                mimeType: 'text/html',
+                attachLog: true,
+                attachmentsPattern: 'test-output/emailable-report.html',
+                to: 'ramanavundela@gmail.com'
+            )
             echo 'Cleaning up workspace...'
             cleanWs()
         }
+        
         success {
             echo '✅ Build Successful!'
         }
