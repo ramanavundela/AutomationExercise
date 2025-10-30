@@ -10,7 +10,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 echo 'Cloning repository...'
-                git branch: 'master', url: 'https://github.com/ramanavundela/GitAutomation.git'
+                git branch: 'aeramana', url: 'https://github.com/ramanavundela/AutomationExercise.git'
             }
         }
 
