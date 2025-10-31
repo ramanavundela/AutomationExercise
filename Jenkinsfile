@@ -32,7 +32,7 @@ pipeline {
         script {
             // generate timestamp for report
             def d = new Date();
-            env.REPORT_NAME = ""Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";"
+            env.REPORT_NAME = "Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";
 
             echo "🧾 Report will be generated as: ${env.REPORT_NAME}"
 
@@ -45,8 +45,8 @@ pipeline {
          steps {
            echo 'Publishing Extent Report...'
            publishHTML([
-            reportDir: 'test-output/ExtentReports',
-            reportFiles: 'ExtentReport.html',
+            reportDir: 'extentReport',
+            reportFiles: '${env.REPORT_NAME}',
             reportName: 'Extent Report',
             allowMissing: false,
             alwaysLinkToLastBuild: true,
@@ -73,7 +73,7 @@ pipeline {
             subject: "📊 Automation Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
             to: "ramanavundela@gmail.com",
             attachmentsPattern: """
-                test-output/extentReport/${env.REPORT_NAME},
+                extentReport/${env.REPORT_NAME},
                 test-output/emailable-report.html
             """,
             body: """
