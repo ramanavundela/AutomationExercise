@@ -1,5 +1,6 @@
 package extentListenersUtility;
 
+import autexe.Signup;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -14,7 +15,6 @@ import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 
 
-//import base.BaseTest;
 
 
 public class ExtentManager {
@@ -45,7 +45,7 @@ public class ExtentManager {
 	    }
 
 	
-	    /*
+	    
 		public static void captureScreenshot() throws IOException {
 			
 			Date d = new Date();
@@ -53,7 +53,7 @@ public class ExtentManager {
 
 			
 			
-		File screeshot = ((TakesScreenshot)  BaseTest.driver).getScreenshotAs(OutputType.FILE);
+		File screeshot = ((TakesScreenshot)  Signup.driver).getScreenshotAs(OutputType.FILE);
 			FileUtils.copyFile(screeshot, new File(".//reports//"+fileName));
 		}
 		
@@ -70,7 +70,7 @@ public class ExtentManager {
 			FileUtils.copyFile(screeshot, new File(".//screenshot//"+"Element_"+fileName));
 		}
 
-	 */
+	 
 
 
 	}

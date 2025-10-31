@@ -2,20 +2,20 @@
 <testng-results ignored="0" total="2" passed="1" failed="1" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2025-10-31T00:54:04 IST" name="Suite" finished-at="2025-10-31T00:54:31 IST" duration-ms="26797">
+  <suite started-at="2025-10-31T12:11:11 IST" name="Suite" finished-at="2025-10-31T12:11:32 IST" duration-ms="21105">
     <groups>
     </groups>
-    <test started-at="2025-10-31T00:54:04 IST" name="Test" finished-at="2025-10-31T00:54:31 IST" duration-ms="26797">
+    <test started-at="2025-10-31T12:11:11 IST" name="Test" finished-at="2025-10-31T12:11:32 IST" duration-ms="21105">
       <class name="autexeTest.SignupTest">
-        <test-method is-config="true" signature="browserlaunch()[pri:0, instance:autexeTest.SignupTest@7586beff]" started-at="2025-10-31T00:53:59 IST" name="browserlaunch" finished-at="2025-10-31T00:54:04 IST" duration-ms="5444" status="PASS">
+        <test-method is-config="true" signature="browserlaunch()[pri:0, instance:autexeTest.SignupTest@452e19ca]" started-at="2025-10-31T12:11:06 IST" name="browserlaunch" finished-at="2025-10-31T12:11:11 IST" duration-ms="4775" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- browserlaunch -->
-        <test-method signature="verifyHomePageVisible()[pri:1, instance:autexeTest.SignupTest@7586beff]" started-at="2025-10-31T00:54:04 IST" name="verifyHomePageVisible" finished-at="2025-10-31T00:54:10 IST" duration-ms="5058" status="PASS">
+        <test-method signature="verifyHomePageVisible()[pri:1, instance:autexeTest.SignupTest@452e19ca]" started-at="2025-10-31T12:11:11 IST" name="verifyHomePageVisible" finished-at="2025-10-31T12:11:14 IST" duration-ms="2831" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- verifyHomePageVisible -->
-        <test-method signature="enterAccountInformation()[pri:2, instance:autexeTest.SignupTest@7586beff]" started-at="2025-10-31T00:54:10 IST" name="enterAccountInformation" finished-at="2025-10-31T00:54:31 IST" duration-ms="21665" status="FAIL">
+        <test-method signature="enterAccountInformation()[pri:2, instance:autexeTest.SignupTest@452e19ca]" started-at="2025-10-31T12:11:14 IST" name="enterAccountInformation" finished-at="2025-10-31T12:11:32 IST" duration-ms="18023" status="FAIL">
           <exception class="java.lang.AssertionError">
             <message>
               <![CDATA[ Account deletion failed! expected [true] but found [false]]]>
@@ -60,7 +60,7 @@ at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:91)
           <reporter-output>
           </reporter-output>
         </test-method> <!-- enterAccountInformation -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:autexeTest.SignupTest@7586beff]" started-at="2025-10-31T00:54:31 IST" name="tearDown" finished-at="2025-10-31T00:54:31 IST" duration-ms="1" status="PASS">
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:autexeTest.SignupTest@452e19ca]" started-at="2025-10-31T12:11:32 IST" name="tearDown" finished-at="2025-10-31T12:11:32 IST" duration-ms="0" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDown -->
