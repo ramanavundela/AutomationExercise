@@ -32,7 +32,7 @@ pipeline {
         script {
             // generate timestamp for report
             def d = new Date();
-            env.REPORT_NAME = ""Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";"
+            env.REPORT_NAME = "Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";
 
             echo "🧾 Report will be generated as: ${env.REPORT_NAME}"
 
