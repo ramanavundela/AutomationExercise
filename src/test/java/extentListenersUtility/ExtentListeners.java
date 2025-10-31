@@ -21,14 +21,15 @@ public class ExtentListeners implements ITestListener, ISuiteListener
 {
 
 	static Date d = new Date();
-	static String fileName = "Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";
+	static String reportName = "Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";
 
-	private static ExtentReports extent = ExtentManager.createInstance(".\\extentReport\\" + fileName);
+	private static ExtentReports extent = ExtentManager.createInstance(".\\extentReport\\" + reportName);
 
 	public static ExtentTest test;
 	
 
 	public void onTestStart(ITestResult result) 
+	
 	{
 
 		test = extent.createTest(result.getTestClass().getName() + "     @TestCase : " + result.getMethod().getMethodName());

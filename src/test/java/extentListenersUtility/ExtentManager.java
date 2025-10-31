@@ -48,13 +48,16 @@ public class ExtentManager {
 	    
 		public static void captureScreenshot() throws IOException {
 			
+	        String reportName = System.getProperty("env.REPORT_NAME");
+
+			
 			Date d = new Date();
-			 fileName = d.toString().replace(":", "_").replace(" ", "_")+".jpg";
+			reportName = d.toString().replace(":", "_").replace(" ", "_")+".jpg";
 
 			
 			
 		File screeshot = ((TakesScreenshot)  Signup.driver).getScreenshotAs(OutputType.FILE);
-			FileUtils.copyFile(screeshot, new File(".//reports//"+fileName));
+			FileUtils.copyFile(screeshot, new File(".//reports//"+reportName));
 		}
 		
 		
