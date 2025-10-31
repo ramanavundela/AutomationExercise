@@ -27,6 +27,19 @@ pipeline {
                 bat 'mvn test'
             }
         }
+        stage('Publish Extent Report') {
+         steps {
+           echo 'Publishing Extent Report...'
+           publishHTML([
+            reportDir: 'test-output/ExtentReports',
+            reportFiles: 'ExtentReport.html',
+            reportName: 'Extent Report',
+            allowMissing: false,
+            alwaysLinkToLastBuild: true,
+            keepAll: true
+        ])
+    }
+}
 
         stage('Generate Reports') {
             steps {
@@ -43,18 +56,29 @@ pipeline {
     post {
         always {
 			 emailext(
-                subject: "Automation Test Report - Build #${env.BUILD_NUMBER}",
-                body: """
-                    <p>Hi Team,</p>
-                    <p>The automation suite has completed. Please find the report below:</p>
-                    <p><a href="${env.BUILD_URL}HTML_20Report/">Click here to view report</a></p>
-                    <p>Thanks,<br>Automation Jenkins</p>
-                """,
-                mimeType: 'text/html',
-                attachLog: true,
-                attachmentsPattern: 'test-output/emailable-report.html',
-                to: 'ramanavundela@gmail.com'
-            )
+            subject: "📊 Automation Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
+            to: "ramanavundela@gmail.com",
+            attachmentsPattern: """
+                test-output/ExtentReports/ExtentReport.html,
+                test-output/emailable-report.html
+            """,
+            body: """
+                <h2>Automation Test Execution Summary</h2>
+                <p>Hi Team,</p>
+                <p>The Jenkins build <b>#${env.BUILD_NUMBER}</b> has completed with status:
+                <b>${currentBuild.currentResult}</b>.</p>
+
+                <p><b>Click below to view reports:</b></p>
+                <ul>
+                    <li><a href="${env.BUILD_URL}Extent_20Report/">📘 Extent Report</a></li>
+                    <li><a href="${env.BUILD_URL}TestNG_20Emailable_20Report/">📄 Emailable Report</a></li>
+                </ul>
+
+                <p>Both reports are also attached to this email for offline viewing.</p>
+                <p>Thanks,<br><b>Jenkins Automation</b></p>
+            """,
+            mimeType: 'text/html'
+        )
             echo 'Cleaning up workspace...'
             cleanWs()
         }
