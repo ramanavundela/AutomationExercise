@@ -101,8 +101,8 @@ public class ExtentListeners implements ITestListener, ISuiteListener
 	{
 
 		if (extent != null) {
-
-			extent.flush();
+			System.out.println("Flushing Extent Report...");
+	        extent.flush();
 		}
 
 	}
