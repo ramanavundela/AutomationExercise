@@ -28,10 +28,9 @@ pipeline {
                     // Generate unique report name
                     def d = new Date()
                     env.REPORT_NAME = "Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html"
-
                     echo "🧾 Report will be generated as: ${env.REPORT_NAME}"
 
-                    // ✅ Catch test failures but continue pipeline execution
+                    // Run tests and continue even if failures occur
                     catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                         bat "mvn clean test -Dfile.encoding=UTF-8 -DreportName=${env.REPORT_NAME}"
                     }
@@ -41,32 +40,29 @@ pipeline {
     }
 
     post {
-
-        // ✅ Always publish reports even if tests failed
         always {
             echo '📊 Publishing Extent & TestNG Reports...'
 
-            // Publish Extent Report
-            publishHTML([[
+            // ✅ Use SINGLE map — not list — for Jenkins 2.531+
+            publishHTML([
                 reportDir: 'extentReport',
                 reportFiles: '**/*.html',
                 reportName: 'Extent Report',
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
                 keepAll: true
-            ]])
+            ])
 
-            // Publish TestNG Emailable Report
-            publishHTML([[
+            publishHTML([
                 reportDir: 'test-output',
                 reportFiles: 'emailable-report.html',
                 reportName: 'TestNG Report',
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
                 keepAll: true
-            ]])
+            ])
 
-            // ✅ Email reports
+            // ✅ Send email with reports
             echo '📧 Sending report email...'
             emailext(
                 subject: "📊 Automation Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
@@ -87,7 +83,6 @@ pipeline {
                 mimeType: 'text/html'
             )
 
-            // ✅ Clean workspace after publishing reports
             echo '🧹 Cleaning up workspace...'
             cleanWs()
         }
