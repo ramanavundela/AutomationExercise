@@ -46,7 +46,7 @@ pipeline {
            echo 'Publishing Extent Report...'
            publishHTML([
             reportDir: 'extentReport',
-            reportFiles: '/${env.REPORT_NAME}',
+            reportFiles: '${env.REPORT_NAME}',
             reportName: 'Extent Report',
             allowMissing: false,
             alwaysLinkToLastBuild: true,
