@@ -19,19 +19,16 @@ import com.aventstack.extentreports.markuputils.MarkupHelper;
 
 public class ExtentListeners implements ITestListener, ISuiteListener
 {
-    static String reportName;
-    static 
-    {
-    reportName = System.getProperty("reportName");
-	Date d = new Date();
-	reportName = "Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";
-    }
-    
-	private static ExtentReports extent = ExtentManager.createInstance("extentReport/" + reportName);
+	
+	private static ExtentReports extent;
 
 	public static ExtentTest test;
+ 
+	public void onStart(ITestContext context) 
+	{
+		extent = ExtentManager.createInstance();
+	}
 	
-
 	public void onTestStart(ITestResult result) 
 	
 	{
@@ -92,10 +89,7 @@ public class ExtentListeners implements ITestListener, ISuiteListener
 
 	}
 
-	public void onStart(ITestContext context) 
-	{
-
-	}
+	
 
 	public void onFinish(ITestContext context)
 	{

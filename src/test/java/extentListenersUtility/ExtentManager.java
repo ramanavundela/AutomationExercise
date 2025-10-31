@@ -24,9 +24,18 @@ public class ExtentManager {
 	
 	
 
-	    public static ExtentReports createInstance(String fileName)
+	    public static ExtentReports createInstance()
 	    {
-	        ExtentSparkReporter htmlReporter = new ExtentSparkReporter(fileName);
+	        if (extent == null) {
+	            Date d = new Date();
+	            fileName = "Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";
+
+	            // ✅ Create a folder for reports inside workspace
+	            String reportDir = System.getProperty("user.dir") + "/extentReport/";
+	            new File(reportDir).mkdirs();
+
+	            String fullReportPath = reportDir + fileName;
+	        ExtentSparkReporter htmlReporter = new ExtentSparkReporter(fullReportPath);
 	       
 	        
 	        htmlReporter.config().setTheme(Theme.STANDARD);
@@ -36,11 +45,11 @@ public class ExtentManager {
 	        
 	        extent = new ExtentReports();
 	        extent.attachReporter(htmlReporter);
-	        extent.setSystemInfo("Automation Tester", "Anudheep");
-	        extent.setSystemInfo("Organization", "Magnitia");
-	        extent.setSystemInfo("Build no", "Magnitia Sprint-1a");
+	        extent.setSystemInfo("Automation Tester", "Ramana");
+	        extent.setSystemInfo("Organization", "Taxilla");
+	        extent.setSystemInfo("Build no", "Taxilla Sprint-1a");
 	        
-	        
+	        }
 	        return extent;
 	    }
 
