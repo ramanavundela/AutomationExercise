@@ -9,6 +9,7 @@
       <class name="autexeTest.SignupTest">
         <methods>
           <include name="browserlaunch"/>
+          <include name="verifyHomePageVisible"/>
           <include name="tearDown"/>
           <include name="enterAccountInformation"/>
         </methods>

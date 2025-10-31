@@ -27,7 +27,7 @@ public class ExtentListeners implements ITestListener, ISuiteListener
 	reportName = "Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";
     }
     
-	private static ExtentReports extent = ExtentManager.createInstance(".\\extentReport\\" + reportName);
+	private static ExtentReports extent = ExtentManager.createInstance("extentReport/" + reportName);
 
 	public static ExtentTest test;
 	
