@@ -26,30 +26,17 @@ public class ExtentManager {
 
 	    public static ExtentReports createInstance()
 	    {
-	        if (extent == null) {
-	            Date d = new Date();
-	            fileName = "Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";
+	    	// Generate timestamp-based unique report name
+	        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+	        String reportPath = System.getProperty("user.dir") + "/extentReport/Extent_" + timeStamp + ".html";
 
-	            // ✅ Create a folder for reports inside workspace
-	            String reportDir = System.getProperty("user.dir") + "/extentReport/";
-	            new File(reportDir).mkdirs();
+	        ExtentSparkReporter spark = new ExtentSparkReporter(reportPath);
+	        spark.config().setDocumentTitle("Automation Test Report");
+	        spark.config().setReportName("Automation Results");
+	        spark.config().setTheme(Theme.STANDARD);
 
-	            String fullReportPath = reportDir + fileName;
-	        ExtentSparkReporter htmlReporter = new ExtentSparkReporter(fullReportPath);
-	       
-	        
-	        htmlReporter.config().setTheme(Theme.STANDARD);
-	        htmlReporter.config().setDocumentTitle(fileName);
-	        htmlReporter.config().setEncoding("utf-8");
-	        htmlReporter.config().setReportName(fileName);
-	        
 	        extent = new ExtentReports();
-	        extent.attachReporter(htmlReporter);
-	        extent.setSystemInfo("Automation Tester", "Ramana");
-	        extent.setSystemInfo("Organization", "Taxilla");
-	        extent.setSystemInfo("Build no", "Taxilla Sprint-1a");
-	        
-	        }
+	        extent.attachReporter(spark);
 	        return extent;
 	    }
 

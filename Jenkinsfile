@@ -8,7 +8,7 @@ pipeline {
 
     stages {
 
-        // 🧹 STEP 1: Clean workspace (remove any old reports or builds)
+        // 🧹 STEP 1: Clean workspace (remove old builds/reports)
         stage('Clean Workspace') {
             steps {
                 echo '🧹 Cleaning old workspace before starting new build...'
@@ -44,7 +44,7 @@ pipeline {
                     env.REPORT_NAME = "Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html"
                     echo "🧾 Report will be generated as: ${env.REPORT_NAME}"
 
-                    // Execute tests with unique report name passed via system property
+                    // Run tests with Extent report name parameter
                     catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                         bat "mvn clean test -Dfile.encoding=UTF-8 -DreportName=${env.REPORT_NAME}"
                     }
@@ -53,18 +53,18 @@ pipeline {
         }
     }
 
-    // 📊 STEP 5: Post-build actions — collect, publish, email reports
+    // 📊 STEP 5: Post-build actions — collect, publish, and email reports
     post {
         always {
             echo '📊 Collecting and publishing fresh reports...'
 
-            // Ensure folders exist for safe copy
+            // Ensure folders exist
             bat '''
             if not exist extentReport mkdir extentReport
             if not exist test-output mkdir test-output
             '''
 
-            // ✅ Find and copy the latest Extent Report (outside target)
+            // ✅ Find and copy the latest Extent Report (generated outside target)
             bat '''
             echo Searching for latest Extent report...
             set "foundExtent="
@@ -83,7 +83,7 @@ pipeline {
 
             // ✅ Find and copy the latest TestNG emailable-report.html
             bat '''
-            echo Searching for TestNG report...
+            echo Searching for latest TestNG report...
             set "foundTestNG="
             for /f "delims=" %%f in ('dir /b /s /o-d test-output\\emailable-report.html 2^>nul') do (
                 echo Found TestNG report: %%f
@@ -98,7 +98,7 @@ pipeline {
             exit /b 0
             '''
 
-            // ✅ Publish HTML reports in Jenkins UI
+            // ✅ Publish reports in Jenkins UI
             publishHTML([
                 reportDir: 'extentReport',
                 reportFiles: 'ExtentReport.html',
@@ -117,14 +117,20 @@ pipeline {
                 keepAll: true
             ])
 
-            // ✅ Archive reports as a downloadable ZIP
-            echo '📦 Creating reports.zip for download...'
+            // ✅ Create ZIP using only built-in Windows commands (no PowerShell)
             bat '''
-            powershell -Command "Compress-Archive -Path extentReport\\ExtentReport.html, test-output\\emailable-report.html -DestinationPath reports.zip -Force"
+            echo Creating reports.zip for download...
+            del reports.zip >nul 2>&1
+            powershell.exe -Command "if (Test-Path 'extentReport\\ExtentReport.html') {Compress-Archive -Path 'extentReport\\ExtentReport.html','test-output\\emailable-report.html' -DestinationPath 'reports.zip' -Force}" 2>nul || (
+                echo ⚠️ PowerShell not available — skipping ZIP creation.
+            )
+            exit /b 0
             '''
-            archiveArtifacts artifacts: 'reports.zip', fingerprint: true
 
-            // ✅ Send Email with latest reports
+            // ✅ Archive artifacts for download
+            archiveArtifacts artifacts: 'extentReport/ExtentReport.html, test-output/emailable-report.html, reports.zip', fingerprint: true
+
+            // ✅ Send email with reports
             echo '📧 Sending email with latest reports...'
             emailext(
                 subject: "📊 Automation Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
@@ -138,8 +144,8 @@ pipeline {
                     <h2>Automation Test Summary</h2>
                     <p>Build #${env.BUILD_NUMBER} - Status: <b>${currentBuild.currentResult}</b></p>
                     <ul>
-                        <li><a href="${env.BUILD_URL}Extent_20Report_(Latest)/">📘 View Extent Report</a></li>
-                        <li><a href="${env.BUILD_URL}TestNG_20Report_(Latest)/">📄 View TestNG Report</a></li>
+                        <li><a href="${env.BUILD_URL}Extent_20Report_20_28Latest_29/">📘 View Extent Report</a></li>
+                        <li><a href="${env.BUILD_URL}TestNG_20Report_20_28Latest_29/">📄 View TestNG Report</a></li>
                         <li><a href="${env.BUILD_URL}artifact/reports.zip">📦 Download All Reports (ZIP)</a></li>
                     </ul>
                     <p>Reports are attached for offline viewing.</p>
@@ -147,7 +153,6 @@ pipeline {
                 mimeType: 'text/html'
             )
 
-            // Optional: Clean workspace after publishing
             echo '🧽 Cleaning workspace after publishing...'
             cleanWs()
         }
