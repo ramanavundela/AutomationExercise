@@ -17,12 +17,16 @@ import com.aventstack.extentreports.markuputils.MarkupHelper;
 
 
 
-public class ExtentListeners implements ITestListener, ISuiteListener 
+public class ExtentListeners implements ITestListener, ISuiteListener
 {
-
-	static Date d = new Date();
-	static String reportName = "Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";
-
+    static String reportName;
+    static 
+    {
+    reportName = System.getProperty("reportName");
+	Date d = new Date();
+	reportName = "Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";
+    }
+    
 	private static ExtentReports extent = ExtentManager.createInstance(".\\extentReport\\" + reportName);
 
 	public static ExtentTest test;
