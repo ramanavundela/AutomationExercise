@@ -18,7 +18,7 @@ pipeline {
         stage('Build Project') {
             steps {
                 echo '🏗️ Building project with Maven...'
-                bat 'mvn clean compile'
+                bat 'mvn clean compile -Dfile.encoding=UTF-8'
             }
         }
 
@@ -31,43 +31,42 @@ pipeline {
 
                     echo "🧾 Report will be generated as: ${env.REPORT_NAME}"
 
-                    // Run tests and generate report
-                    bat "mvn clean test -DreportName=${env.REPORT_NAME}"
+                    // ✅ Catch test failures but continue pipeline execution
+                    catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                        bat "mvn clean test -Dfile.encoding=UTF-8 -DreportName=${env.REPORT_NAME}"
+                    }
                 }
-            }
-        }
-
-        stage('Publish Extent Report') {
-            steps {
-                echo '📊 Publishing Extent Report...'
-                publishHTML([[
-                    reportDir: 'extentReport',
-                    reportFiles: '**/*.html',
-                    reportName: 'Extent Report',
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true
-                ]])
-            }
-        }
-
-        stage('Publish TestNG Report') {
-            steps {
-                echo '📈 Publishing TestNG HTML Report...'
-                publishHTML([[
-                    reportDir: 'test-output',
-                    reportFiles: 'emailable-report.html',
-                    reportName: 'TestNG Report',
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true
-                ]])
             }
         }
     }
 
     post {
+
+        // ✅ Always publish reports even if tests failed
         always {
+            echo '📊 Publishing Extent & TestNG Reports...'
+
+            // Publish Extent Report
+            publishHTML([[
+                reportDir: 'extentReport',
+                reportFiles: '**/*.html',
+                reportName: 'Extent Report',
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true
+            ]])
+
+            // Publish TestNG Emailable Report
+            publishHTML([[
+                reportDir: 'test-output',
+                reportFiles: 'emailable-report.html',
+                reportName: 'TestNG Report',
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true
+            ]])
+
+            // ✅ Email reports
             echo '📧 Sending report email...'
             emailext(
                 subject: "📊 Automation Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
@@ -83,11 +82,12 @@ pipeline {
                         <li><a href="${env.BUILD_URL}Extent_20Report/">📘 Extent Report</a></li>
                         <li><a href="${env.BUILD_URL}TestNG_20Report/">📄 TestNG Report</a></li>
                     </ul>
-                    <p>Reports attached for offline view.</p>
+                    <p>Reports are attached for offline view.</p>
                 """,
                 mimeType: 'text/html'
             )
 
+            // ✅ Clean workspace after publishing reports
             echo '🧹 Cleaning up workspace...'
             cleanWs()
         }
@@ -96,8 +96,12 @@ pipeline {
             echo '✅ Build Successful!'
         }
 
+        unstable {
+            echo '⚠️ Some tests failed — Reports still generated.'
+        }
+
         failure {
-            echo '❌ Build Failed!'
+            echo '❌ Build Failed — Reports still generated.'
         }
     }
 }
