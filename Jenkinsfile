@@ -45,8 +45,8 @@ pipeline {
          steps {
            echo 'Publishing Extent Report...'
            publishHTML([
-            reportDir: 'test-output/ExtentReports',
-            reportFiles: 'ExtentReport.html',
+            reportDir: 'extentReport',
+            reportFiles: '/${env.REPORT_NAME}',
             reportName: 'Extent Report',
             allowMissing: false,
             alwaysLinkToLastBuild: true,
@@ -73,7 +73,7 @@ pipeline {
             subject: "📊 Automation Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
             to: "ramanavundela@gmail.com",
             attachmentsPattern: """
-                test-output/extentReport/${env.REPORT_NAME},
+                extentReport/${env.REPORT_NAME},
                 test-output/emailable-report.html
             """,
             body: """
