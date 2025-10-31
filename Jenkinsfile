@@ -38,9 +38,9 @@ pipeline {
         }
     }
 
-   post {
+  post {
     always {
-        echo '📊 Preparing and publishing latest reports (auto-detect mode)...'
+        echo '📊 Preparing and publishing latest reports (auto-detect mode with safety)...'
 
         // ✅ Make sure final report directories exist
         bat '''
@@ -48,29 +48,41 @@ pipeline {
         if not exist test-output mkdir test-output
         '''
 
-        // ✅ Auto-detect ExtentReport location and copy latest HTML
+        // ✅ Auto-detect Extent report (safe version)
         bat '''
         echo Searching for latest Extent report...
+        set "foundReport="
         for /f "delims=" %%f in ('dir /b /s /o-d extentReport\\*.html test-output\\extentReport\\*.html target\\extentReport\\*.html 2^>nul') do (
             echo Found Extent report: %%f
-            copy /Y "%%f" "extentReport\\ExtentReport.html"
+            copy /Y "%%f" "extentReport\\ExtentReport.html" >nul
+            set "foundReport=1"
             goto done
         )
         :done
+        if not defined foundReport (
+            echo ⚠️ No Extent report found.
+        )
+        exit /b 0
         '''
 
-        // ✅ Auto-detect TestNG emailable report
+        // ✅ Auto-detect TestNG emailable report (safe version)
         bat '''
-        echo Searching for emailable-report.html...
+        echo Searching for TestNG report...
+        set "foundTestNG="
         for /f "delims=" %%f in ('dir /b /s /o-d test-output\\emailable-report.html target\\test-output\\emailable-report.html 2^>nul') do (
             echo Found TestNG report: %%f
-            copy /Y "%%f" "test-output\\emailable-report.html"
+            copy /Y "%%f" "test-output\\emailable-report.html" >nul
+            set "foundTestNG=1"
             goto done
         )
         :done
+        if not defined foundTestNG (
+            echo ⚠️ No TestNG report found.
+        )
+        exit /b 0
         '''
 
-        // ✅ Publish both reports (always latest)
+        // ✅ Publish reports
         publishHTML([
             reportDir: 'extentReport',
             reportFiles: 'ExtentReport.html',
@@ -89,14 +101,14 @@ pipeline {
             keepAll: true
         ])
 
-        // ✅ Zip both reports for archive/download
+        // ✅ Archive ZIP
         echo '📦 Creating reports.zip...'
         bat '''
         powershell -Command "Compress-Archive -Path extentReport\\ExtentReport.html, test-output\\emailable-report.html -DestinationPath reports.zip -Force"
         '''
         archiveArtifacts artifacts: 'reports.zip', fingerprint: true
 
-        // ✅ Send email with both reports and ZIP
+        // ✅ Send email with both reports
         echo '📧 Sending report email...'
         emailext(
             subject: "📊 Automation Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
@@ -135,4 +147,5 @@ pipeline {
         echo '❌ Build Failed — Reports still generated.'
     }
 }
+
 }
