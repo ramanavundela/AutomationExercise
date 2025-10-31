@@ -27,6 +27,20 @@ pipeline {
                 bat 'mvn test'
             }
         }
+        stage('Run Tests') {
+        steps {
+        script {
+            // generate timestamp for report
+            def d = new Date();
+            env.REPORT_NAME = ""Extent_" + d.toString().replace(":", "_").replace(" ", "_") + ".html";"
+
+            echo "🧾 Report will be generated as: ${env.REPORT_NAME}"
+
+            // run Maven with report name as system property
+            bat "mvn clean test -DreportName=${env.REPORT_NAME}"
+        }
+        }
+        }
         stage('Publish Extent Report') {
          steps {
            echo 'Publishing Extent Report...'
@@ -59,7 +73,7 @@ pipeline {
             subject: "📊 Automation Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
             to: "ramanavundela@gmail.com",
             attachmentsPattern: """
-                test-output/ExtentReports/ExtentReport.html,
+                test-output/extentReport/${env.REPORT_NAME},
                 test-output/emailable-report.html
             """,
             body: """
@@ -70,7 +84,7 @@ pipeline {
 
                 <p><b>Click below to view reports:</b></p>
                 <ul>
-                    <li><a href="${env.BUILD_URL}Extent_20Report/">📘 Extent Report</a></li>
+                    <li><a href="${env.BUILD_URL}Extent_20Report/">📘 ${env.REPORT_NAME}</a></li>
                     <li><a href="${env.BUILD_URL}TestNG_20Emailable_20Report/">📄 Emailable Report</a></li>
                 </ul>
 
